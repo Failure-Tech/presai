@@ -7,7 +7,7 @@ processor = AutoProcessor.from_pretrained("HuggingFaceTB/SmolVLM-Instruct")
 model = AutoModelForImageTextToText.from_pretrained(
     "HuggingFaceTB/SmolVLM-Instruct",
     torch_dtype = torch.bfloat16,
-    _attn_implmentation="flash_attention_2" if device == "cuda" else "eager"
+    _attn_implementation="flash_attention_2" if device == "cuda" else "eager"
 ).to(device)
 
 messages = [
@@ -15,7 +15,7 @@ messages = [
         "role": "user",
         "content": [
             {"type": "video", "path": "./data/body_cam_model_test.mp4"},
-            {"type": "text", "text": "Describe this video."},
+            {"type": "text", "text": "Describe what is going on in this body camera footage from this police officer."},
         ],
     }
 ]
