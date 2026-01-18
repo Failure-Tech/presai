@@ -1,17 +1,34 @@
 import cv2
 import torch
 import moviepy as mp
+from ultralytics import YOLO
 
-model = torch.hub.load("ultralytics/yolov5", "yolov5s", pretrained=True, force_reload=True)
-images = ['http://images.cocodataset.org/val2017/000000039769.jpg', 'https://ultralytics.com/images/zidane.jpg']
+"""test for yolov8 through YOLO lib"""
+# model = YOLO("yolov8n.pt")
+# results = model(images)
+# results[0].show()
+# try:
+#     results.render()
+#     print("yay")
+# except Exception as e:
+#     print("not yay")
+# results[0].save(filename="test_yolo26_m.jpg")
 
-# model.info()
+
+model = torch.hub.load("ultralytics/yolov5", "yolov5x6", pretrained=True, force_reload=True)
+# print(torch.hub.list("ultralytics/yolov5"))
+
+
+"""
+# MODEL TESTING ON IMAGES
+# images = ['http://images.cocodataset.org/val2017/000000039769.jpg', 'https://ultralytics.com/images/zidane.jpg']
 # results = model(images)
 # results.print()
 # results.save()
+"""
 
 # video stuff
-vid = "./frontend/body_worn_camera_example_footage.mp4"
+vid = "./body_worn_camera_example_footage.mp4"
 # vid = "./test_vid.mp4"
 vidcap = cv2.VideoCapture(vid)
 audio = mp.VideoFileClip(vid)
