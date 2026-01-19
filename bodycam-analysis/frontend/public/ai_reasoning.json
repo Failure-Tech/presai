@@ -1,0 +1,29 @@
+{
+  "sceneAnalysis": "The body camera footage shows a police officer conducting a daily mic check in a vehicle. The officer, identified as Officer White, is wearing a uniform and is in the process of checking the vehicle for any damage or issues. The vehicle is identified as 542, and it appears to be in good condition.\n\nThere is minor damage around the vehicle, but it is not significant enough to cause concern. The officer mentions that there is no camera in the vehicle, but there is a printer and a taser. The officer also notes that the person in the vehicle was little as heck and that they conducted their daily mic check inspection.\n\nThe officer mentions that they are going to be cold and sweaty after the inspection, but they will find a good way to deal with the situation. The officer also notes that there is no cell phone in the vehicle, but there is a camera.",
+  "keyEvents": "1. The officer is on the street.\n2. The officer is stopped by a man.\n3. The officer is talking to the man.\n4. The officer is asking the man to step out of the car.\n5. The officer is taking the man's picture.\n6. The officer is asking the man to get out of the car.\n7. The officer is taking the man's picture.\n8. The officer is asking the man to get out of the car.\n9. The officer is taking the man's picture.\n10. The officer is asking the man to get out of the car.\n11. The officer is taking the man's picture.\n12.",
+  "context": "The body camera footage shows a police officer in uniform with a badge on his chest and a gun holstered on his hip. The officer is standing in front of a person who appears to be a civilian. The civilian is wearing a dark-colored shirt and dark pants. The officer is looking at the civilian while the civilian is looking at the officer. The officer has his left hand on his gun while his right hand is extended towards the civilian. The civilian is looking at the officer with a fearful expression. The officer is wearing a police uniform with a name tag that says \"Officer Smith.\" The officer is standing in front of a building with a sign that says \"Police Station.\"",
+  "transcriptSummary": {
+    "totalDuration": 115.0,
+    "speakers": [
+      "UNKNOWN"
+    ],
+    "keyPhrases": [
+      {
+        "time": 0.0,
+        "text": "Mic check, mic check. This is Officer White conducting my daily mic check. I'll be riding inside 542. Looks like there is"
+      },
+      {
+        "time": 51.28,
+        "text": "minor damage around the vehicle. There is no camera. There is a printer and a taser."
+      },
+      {
+        "time": 61.52,
+        "text": "Sorry, there is no cell phone, but there is a camera. Whoever was in this car was little as heck and this conducts my daily mic"
+      },
+      {
+        "time": 94.12,
+        "text": "check inspection We're going to be cold and sweaty and so on, but we're going to find a good way."
+      }
+    ]
+  }
+}

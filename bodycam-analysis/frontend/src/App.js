@@ -12,6 +12,7 @@ export default function App() {
   const [showTranscript, setShowTranscript] = useState(false);
   const [showPerplexity, setShowPerplexity] = useState(false);
   const [transcript, setTranscript] = useState([]);
+  const [aiReasoning, setAiReasoning] = useState(null);
 
   // Load transcript from JSON file
   useEffect(() => {
@@ -19,6 +20,12 @@ export default function App() {
       .then(response => response.json())
       .then(data => setTranscript(data))
       .catch(error => console.error('Error loading transcript:', error));
+
+    // Load AI reasoning
+    fetch('/ai_reasoning.json')
+      .then(response => response.json())
+      .then(data => setAiReasoning(data))
+      .catch(error => console.error('Error loading AI reasoning:', error));
   }, []);
 
   // Switch between videos when object detection is toggled
@@ -334,18 +341,37 @@ export default function App() {
               {showPerplexity && (
                 <div className="mt-2.5 w-80 rounded p-4 max-h-96 overflow-y-auto" style={{ backgroundColor: '#1a1929' }}>
                   <div className="space-y-2.5 text-sm">
-                    <div className="p-2.5 rounded" style={{ backgroundColor: '#0f0e1a' }}>
-                      <h4 className="font-medium text-gray-400 mb-1.5 text-xs">Scene Analysis</h4>
-                      <p className="text-gray-300">Traffic stop scenario detected. Two individuals present. Vehicle stationary on roadside.</p>
-                    </div>
-                    <div className="p-2.5 rounded" style={{ backgroundColor: '#0f0e1a' }}>
-                      <h4 className="font-medium text-gray-400 mb-1.5 text-xs">Key Events</h4>
-                      <p className="text-gray-300">Officer requested documentation at {formatTime(45)}. Subject complied at {formatTime(52)}.</p>
-                    </div>
-                    <div className="p-2.5 rounded" style={{ backgroundColor: '#0f0e1a' }}>
-                      <h4 className="font-medium text-gray-400 mb-1.5 text-xs">Context</h4>
-                      <p className="text-gray-300">License plate ABC-1234 visible. Location: Main St intersection.</p>
-                    </div>
+                    {aiReasoning ? (
+                      <>
+                        <div className="p-2.5 rounded" style={{ backgroundColor: '#0f0e1a' }}>
+                          <h4 className="font-medium text-gray-400 mb-1.5 text-xs">Scene Analysis</h4>
+                          <p className="text-gray-300 text-xs">{aiReasoning.sceneAnalysis}</p>
+                        </div>
+                        <div className="p-2.5 rounded" style={{ backgroundColor: '#0f0e1a' }}>
+                          <h4 className="font-medium text-gray-400 mb-1.5 text-xs">Key Events</h4>
+                          <p className="text-gray-300 text-xs">{aiReasoning.keyEvents}</p>
+                        </div>
+                        <div className="p-2.5 rounded" style={{ backgroundColor: '#0f0e1a' }}>
+                          <h4 className="font-medium text-gray-400 mb-1.5 text-xs">Context</h4>
+                          <p className="text-gray-300 text-xs">{aiReasoning.context}</p>
+                        </div>
+                        {aiReasoning.transcriptSummary && aiReasoning.transcriptSummary.keyPhrases.length > 0 && (
+                          <div className="p-2.5 rounded border border-gray-700" style={{ backgroundColor: '#0f0e1a' }}>
+                            <h4 className="font-medium text-gray-400 mb-1.5 text-xs">Key Moments</h4>
+                            <div className="space-y-1">
+                              {aiReasoning.transcriptSummary.keyPhrases.map((phrase, idx) => (
+                                <div key={idx} className="text-xs">
+                                  <span className="text-gray-500">{formatTime(phrase.time)}</span>
+                                  <p className="text-gray-300 mt-0.5">{phrase.text}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-gray-400 text-center">Loading AI reasoning...</p>
+                    )}
                   </div>
                 </div>
               )}
