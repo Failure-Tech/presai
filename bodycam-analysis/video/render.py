@@ -76,8 +76,12 @@ finally:
     full_vid.release()
     cv2.destroyAllWindows()
 
-    audio = mp.VideoFileClip(vid)
-    video = mp.VideoFileClip(vid_name)
+    try:
+        audio = mp.VideoFileClip(vid)
+        video = mp.VideoFileClip(vid_name)
 
-    video.with_audio(audio)
-    video.write_videofile(vid_name)
+        file_export = vid_name + "_audio.mp4"
+        video.with_audio(audio)
+        video.write_videofile(file_export)
+    except Exception as e:
+        print(f"Audio Export Failed\n{e}")
