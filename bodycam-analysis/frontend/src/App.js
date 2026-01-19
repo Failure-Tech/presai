@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Eye, FileText, Brain, Send, Bold, Italic, Heading1, Heading2, List, ListOrdered } from 'lucide-react';
+import Redact from "./Redact";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
-export default function App() {
+function Home() {
   const videoRef = useRef(null);
   const chatEndRef = useRef(null);
   const textareaRef = useRef(null);
@@ -536,4 +538,16 @@ export default function App() {
       </div>
     </div>
   );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/redact" element={<Redact />} />
+      </Routes>
+    </Router>
+  );
+  
 }
