@@ -2,6 +2,7 @@ import cv2
 import torch
 import moviepy as mp
 from ultralytics import YOLO
+import time
 
 """test for yolov8 through YOLO lib"""
 # model = YOLO("yolov8n.pt")
@@ -75,13 +76,19 @@ finally:
     vidcap.release()
     full_vid.release()
     cv2.destroyAllWindows()
+    time.sleep(10)
 
     try:
         audio = mp.VideoFileClip(vid)
-        video = mp.VideoFileClip(vid_name)
+        audio = audio.audio
+
+        vid_file_name = vid_name+".mp4"
+        video = mp.VideoFileClip(vid_file_name)
 
         file_export = vid_name + "_audio.mp4"
-        video.with_audio(audio)
-        video.write_videofile(file_export)
+        video = video.with_audio(audio)
+        video.write_videofile(file_export, codec="libx264", audio_codec="aac")
+        video.close()
+        audio.close()
     except Exception as e:
         print(f"Audio Export Failed\n{e}")
