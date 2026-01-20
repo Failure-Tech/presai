@@ -366,7 +366,46 @@ function Home() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <style>{`
+          .notes-container::-webkit-scrollbar {
+            width: 10px;
+          }
+          .notes-container::-webkit-scrollbar-track {
+            background: transparent;
+            margin: 10px 0;
+          }
+          .notes-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: inset 0 0 6px rgba(99, 102, 241, 0.3);
+          }
+          .notes-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%);
+            box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.5);
+          }
+          textarea::-webkit-scrollbar {
+            width: 10px;
+          }
+          textarea::-webkit-scrollbar-track {
+            background: transparent;
+            margin: 10px 0;
+          }
+          textarea::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: inset 0 0 6px rgba(99, 102, 241, 0.3);
+          }
+          textarea::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%);
+            box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.5);
+          }
+        `}</style>
+
+        <div className="flex-1 overflow-hidden notes-container">
           {isLoadingNotes ? (
             <div className="w-full h-full bg-transparent text-gray-400 p-6 flex items-center justify-center">
               <span className="text-sm">loading...</span>
