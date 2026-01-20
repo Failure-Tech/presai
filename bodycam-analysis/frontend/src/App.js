@@ -12,7 +12,7 @@ function Home() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [objectDetectionEnabled, setObjectDetectionEnabled] = useState(false);
-  const [ocrEnabled, setOcrEnabled] = useState(false);
+  const [blurEnabled, setBlurEnabled] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
   const [transcript, setTranscript] = useState([]);
   const [aiReasoning, setAiReasoning] = useState(null);
@@ -41,7 +41,9 @@ function Home() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
-  const videoSource = objectDetectionEnabled 
+  const videoSource = blurEnabled
+    ? '/body_cam_model_blur_test_audio.mp4'
+    : objectDetectionEnabled
     ? '/bodycam_detected.mp4'
     : '/bodycam_original.mp4';
 
@@ -120,7 +122,7 @@ function Home() {
     );
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputMessage.trim() === '') return;
 
     const userMessage = { role: 'user', content: inputMessage };
@@ -128,14 +130,49 @@ function Home() {
     setInputMessage('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const aiResponse = {
+    try {
+      const response = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputMessage,
+          videoTime: currentTime,
+          timestamp: formatTime(currentTime)
+        })
+      });
+
+      const data = await response.json();
+
+      let aiResponse = {
         role: 'assistant',
-        content: `Based on the video analysis at ${formatTime(currentTime)}, I can provide insights about your question.`
+        content: ''
       };
+
+      if (data.success) {
+        // Format the response from the agent
+        const answer = data.message || 'No answer found';
+        const sources = data.results && data.results.length > 0 
+          ? `\n\n**Sources:**\n${data.results.slice(0, 2).map(r => `- ${r.title}: ${r.url}`).join('\n')}`
+          : '';
+        
+        aiResponse.content = answer + sources;
+      } else {
+        aiResponse.content = `Error: ${data.error || 'Unknown error occurred'}`;
+      }
+
       setChatMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorResponse = {
+        role: 'assistant',
+        content: `Error connecting to AI agent: ${error.message}`
+      };
+      setChatMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1000);
+    }
   };
 
   const insertFormatting = (format) => {
@@ -298,16 +335,16 @@ function Home() {
                 <source src={videoSource} type="video/mp4" />
               </video>
               
-              {(objectDetectionEnabled || ocrEnabled) && (
+              {(objectDetectionEnabled || blurEnabled) && (
                 <div className="absolute top-2 right-2 flex gap-1.5">
                   {objectDetectionEnabled && (
                     <div className="bg-black bg-opacity-70 px-2 py-1 rounded text-xs text-gray-400">
                       Objects
                     </div>
                   )}
-                  {ocrEnabled && (
+                  {blurEnabled && (
                     <div className="bg-black bg-opacity-70 px-2 py-1 rounded text-xs text-gray-400">
-                      OCR
+                      Blurred
                     </div>
                   )}
                 </div>
@@ -374,13 +411,13 @@ function Home() {
           </button>
           
           <button
-            onClick={() => setOcrEnabled(!ocrEnabled)}
+            onClick={() => setBlurEnabled(!blurEnabled)}
             className={`flex-1 px-3 py-2 rounded text-xs transition ${
-              ocrEnabled ? 'bg-gray-800 text-gray-200' : 'text-gray-400 hover:bg-gray-800'
+              blurEnabled ? 'bg-gray-800 text-gray-200' : 'text-gray-400 hover:bg-gray-800'
             }`}
           >
-            <FileText className="w-3.5 h-3.5 inline mr-1.5" />
-            OCR
+            <Eye className="w-3.5 h-3.5 inline mr-1.5" />
+            Blur
           </button>
 
           <button
