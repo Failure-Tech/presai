@@ -231,52 +231,77 @@ function Home() {
   };
 
   const insertFormatting = (format) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+    // const textarea = textareaRef.current;
+    // if (!textarea) return;
     
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = noteContent.substring(start, end) || 'text';
+    // const start = textarea.selectionStart;
+    // const end = textarea.selectionEnd;
+    // const selectedText = noteContent.substring(start, end) || 'text';
     
-    let formattedText = '';
-    let cursorOffset = 0;
+    // let formattedText = '';
+    // let cursorOffset = 0;
+
+    const div = textareaRef.current
+    if (!div) return;
+
+    const selection = window.getSelection()
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+
+    let element;
     
     switch(format) {
       case 'bold':
-        formattedText = `**${selectedText}**`;
-        cursorOffset = 2;
+        // formattedText = `**${selectedText}**`;
+        // cursorOffset = 2;
+        element = document.createElement("b")
         break;
       case 'italic':
-        formattedText = `*${selectedText}*`;
-        cursorOffset = 1;
+        // formattedText = `*${selectedText}*`;
+        // cursorOffset = 1;
+        element = document.createElement("i");
         break;
       case 'h1':
-        formattedText = `# ${selectedText}`;
-        cursorOffset = 2;
+        // formattedText = `# ${selectedText}`;
+        // cursorOffset = 2;
+        element = document.createElement("h1");
         break;
       case 'h2':
-        formattedText = `## ${selectedText}`;
-        cursorOffset = 3;
+        // formattedText = `## ${selectedText}`;
+        // cursorOffset = 3;
+        element = document.createElement("h2");
         break;
       case 'list':
-        formattedText = `- ${selectedText}`;
-        cursorOffset = 2;
+        // formattedText = `- ${selectedText}`;
+        // cursorOffset = 2;
+        element = document.createElement("li");
         break;
       case 'numbered':
-        formattedText = `1. ${selectedText}`;
-        cursorOffset = 3;
+        // formattedText = `1. ${selectedText}`;
+        // cursorOffset = 3;
+        element = document.createElement("li");
         break;
       default:
-        formattedText = selectedText;
+        // formattedText = selectedText;
+        element = null;
+        break;
     }
     
-    const newText = noteContent.substring(0, start) + formattedText + noteContent.substring(end);
-    setNoteContent(newText);
+    // const newText = noteContent.substring(0, start) + formattedText + noteContent.substring(end);
+    // setNoteContent(newText);
     
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + cursorOffset, start + cursorOffset + selectedText.length);
-    }, 0);
+    // setTimeout(() => {
+    //   textarea.focus();
+    //   textarea.setSelectionRange(start + cursorOffset, start + cursorOffset + selectedText.length);
+    // }, 0);
+
+    if (element && selectedText) {
+      element.textContent = selectedText;
+      range.deleteContents();
+      range.insertNode(element);
+    }
   };
 
   const convertMarkdownToHTML = (text) => {
@@ -411,10 +436,13 @@ function Home() {
               <span className="text-sm">loading...</span>
             </div>
           ) : (
-            <textarea
+            <div
               ref={textareaRef}
-              value={noteContent}
-              onChange={(e) => setNoteContent(e.target.value)}
+              contentEditable="true"
+              // value={noteContent}
+              dangerouslySetInnerHTML={{__html: noteContent}}
+              onInput={(e) => setNoteContent(e.currentTarget.value)}
+              // onChange={(e) => setNoteContent(e.target.value)}
               className="w-full h-full bg-transparent text-gray-300 p-6 focus:outline-none resize-none text-sm leading-relaxed"
               placeholder="Start typing your analysis..."
               style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
