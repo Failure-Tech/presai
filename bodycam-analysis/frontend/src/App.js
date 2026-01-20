@@ -23,6 +23,7 @@ function Home() {
   const [isTyping, setIsTyping] = useState(false);
   const [noteTitle, setNoteTitle] = useState('Bodycam Analysis Notes');
   const [noteContent, setNoteContent] = useState('');
+  const [isLoadingNotes, setIsLoadingNotes] = useState(true);
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'reasoning'
 
   useEffect(() => {
@@ -33,8 +34,62 @@ function Home() {
 
     fetch('/ai_reasoning.json')
       .then(response => response.json())
-      .then(data => setAiReasoning(data))
-      .catch(error => console.error('Error loading AI reasoning:', error));
+      .then(data => {
+        setAiReasoning(data);
+        // Format the reasoning data for human-readable display
+        const formatReasoningData = (reasoningData) => {
+          let formattedText = '';
+          
+          // Scene Analysis
+          if (reasoningData.sceneAnalysis) {
+            formattedText += '## SCENE ANALYSIS\n\n';
+            formattedText += reasoningData.sceneAnalysis + '\n\n';
+          }
+          
+          // Key Events
+          if (reasoningData.keyEvents) {
+            formattedText += '## KEY EVENTS\n\n';
+            formattedText += reasoningData.keyEvents + '\n\n';
+          }
+          
+          // Context
+          if (reasoningData.context) {
+            formattedText += '## CONTEXT\n\n';
+            formattedText += reasoningData.context + '\n\n';
+          }
+          
+          // Transcript Summary
+          if (reasoningData.transcriptSummary) {
+            formattedText += '## TRANSCRIPT SUMMARY\n\n';
+            const summary = reasoningData.transcriptSummary;
+            
+            if (summary.totalDuration) {
+              formattedText += `Total Duration: ${summary.totalDuration} seconds\n\n`;
+            }
+            
+            if (summary.speakers && summary.speakers.length > 0) {
+              formattedText += `Speakers: ${summary.speakers.join(', ')}\n\n`;
+            }
+            
+            if (summary.keyPhrases && summary.keyPhrases.length > 0) {
+              formattedText += '### Key Phrases:\n\n';
+              summary.keyPhrases.forEach((phrase, index) => {
+                formattedText += `[${phrase.time}s] ${phrase.text}\n\n`;
+              });
+            }
+          }
+          
+          return formattedText;
+        };
+        
+        const reasoningText = formatReasoningData(data);
+        setNoteContent(reasoningText);
+        setIsLoadingNotes(false);
+      })
+      .catch(error => {
+        console.error('Error loading AI reasoning:', error);
+        setIsLoadingNotes(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -224,7 +279,7 @@ function Home() {
     }, 0);
   };
 
-  const renderMarkdown = (text) => {
+  const convertMarkdownToHTML = (text) => {
     let html = text;
     // Handle bold
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -244,7 +299,11 @@ function Home() {
     html = html.replace(/(<li class="ml-4 list-decimal">.*?<\/li>)/gs, '<ol class="ml-2">$1</ol>');
     // Handle line breaks
     html = html.replace(/\n/g, '<br/>');
-    return <span dangerouslySetInnerHTML={{ __html: html }} />;
+    return html;
+  };
+
+  const renderMarkdown = (text) => {
+    return <span dangerouslySetInnerHTML={{ __html: convertMarkdownToHTML(text) }} />;
   };
 
   return (
@@ -308,14 +367,20 @@ function Home() {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <textarea
-            ref={textareaRef}
-            value={noteContent}
-            onChange={(e) => setNoteContent(e.target.value)}
-            className="w-full h-full bg-transparent text-gray-300 p-6 focus:outline-none resize-none text-sm leading-relaxed"
-            placeholder="Start typing your analysis..."
-            style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
-          />
+          {isLoadingNotes ? (
+            <div className="w-full h-full bg-transparent text-gray-400 p-6 flex items-center justify-center">
+              <span className="text-sm">loading...</span>
+            </div>
+          ) : (
+            <textarea
+              ref={textareaRef}
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              className="w-full h-full bg-transparent text-gray-300 p-6 focus:outline-none resize-none text-sm leading-relaxed"
+              placeholder="Start typing your analysis..."
+              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
+            />
+          )}
         </div>
       </div>
 
